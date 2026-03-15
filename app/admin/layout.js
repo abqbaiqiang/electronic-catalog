@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { Layout, Menu, Button, Dropdown, Avatar, Space, message } from 'antd'
+import { Layout, Menu, Button, Dropdown, Avatar, Space, message, Spin } from 'antd'
 import {
   DashboardOutlined,
   BookOutlined,
@@ -48,6 +48,7 @@ const menuItems = [
 export default function AdminLayout({ children }) {
   const [collapsed, setCollapsed] = useState(false)
   const [user, setUser] = useState(null)
+  const [loading, setLoading] = useState(true)
   const router = useRouter()
   const pathname = usePathname()
 
@@ -59,6 +60,7 @@ export default function AdminLayout({ children }) {
       return
     }
     setUser(JSON.parse(storedUser))
+    setLoading(false)
   }, [router])
 
   const handleMenuClick = ({ key }) => {
@@ -80,8 +82,17 @@ export default function AdminLayout({ children }) {
     }
   ]
 
-  if (!user) {
-    return null
+  if (loading) {
+    return (
+      <div style={{ 
+        height: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center' 
+      }}>
+        <Spin size="large" />
+      </div>
+    )
   }
 
   return (
