@@ -53,6 +53,12 @@ export default function AdminLayout({ children }) {
   const pathname = usePathname()
 
   useEffect(() => {
+    // 登录页面不检查认证
+    if (pathname === '/admin/login') {
+      setLoading(false)
+      return
+    }
+    
     // Check if user is logged in
     const storedUser = localStorage.getItem('user')
     if (!storedUser) {
@@ -61,7 +67,7 @@ export default function AdminLayout({ children }) {
     }
     setUser(JSON.parse(storedUser))
     setLoading(false)
-  }, [router])
+  }, [router, pathname])
 
   const handleMenuClick = ({ key }) => {
     router.push(key)

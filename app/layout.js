@@ -1,5 +1,4 @@
 import './globals.css'
-import 'antd/dist/reset.css'
 
 export const metadata = {
   title: '电子画册管理系统',
