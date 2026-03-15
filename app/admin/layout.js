@@ -101,6 +101,11 @@ export default function AdminLayout({ children }) {
     )
   }
 
+  // 登录页面直接返回 children，不渲染管理后台布局
+  if (pathname === '/admin/login') {
+    return <>{children}</>
+  }
+
   return (
     <Layout style={{ minHeight: '100vh' }}>
       <Sider trigger={null} collapsible collapsed={collapsed}>
