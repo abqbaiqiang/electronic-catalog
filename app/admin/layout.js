@@ -144,7 +144,7 @@ export default function AdminLayout({ children }) {
           <Dropdown menu={{ items: userMenuItems }} placement="bottomRight">
             <Space style={{ cursor: 'pointer' }}>
               <Avatar icon={<UserOutlined />} />
-              <span>{user.company_name || user.name || '用户'}</span>
+              <span>{(user?.company_name || user?.name || '用户')}</span>
             </Space>
           </Dropdown>
         </Header>
