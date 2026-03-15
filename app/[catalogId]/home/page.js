@@ -31,40 +31,27 @@ export default function CatalogHomePage() {
 
   const loadData = async (id) => {
     try {
-      // Load catalog
-      const { data: catalogData, error: catalogError } = await supabase
-        .from(TABLES.CATALOGS)
-        .select('*')
-        .eq('id', id)
-        .eq('is_active', true)
-        .single()
-
-      if (catalogError) throw catalogError
+      // Load catalog using mockDb
+      const catalogData = await mockDb.getCatalogById(id)
       setCatalog(catalogData)
 
-      // Load categories
-      const { data: categoriesData } = await supabase
-        .from(TABLES.CATEGORIES)
-        .select('*')
-        .eq('catalog_id', id)
-        .eq('is_visible', true)
-        .order('sort_order', { ascending: true })
-
-      setCategories(categoriesData || [])
+      // Load all catalogs to get categories
+      const allCatalogs = await mockDb.getCatalogs('demo-user-001')
+      const catalogIds = allCatalogs.map(c => c.id)
       
-      if (categoriesData && categoriesData.length > 0) {
-        setSelectedCategory(categoriesData[0].id)
+      // Load categories
+      const categoriesData = await mockDb.getCategories(catalogIds)
+      const filteredCategories = categoriesData.filter(c => c.catalog_id === id)
+      setCategories(filteredCategories || [])
+      
+      if (filteredCategories && filteredCategories.length > 0) {
+        setSelectedCategory(filteredCategories[0].id)
       }
 
-      // Load all products for this catalog
-      const { data: productsData } = await supabase
-        .from(TABLES.PRODUCTS)
-        .select('*')
-        .eq('catalog_id', id)
-        .eq('is_active', true)
-        .order('created_at', { ascending: false })
-
-      setProducts(productsData || [])
+      // Load products
+      const productsData = await mockDb.getProducts(catalogIds)
+      const filteredProducts = productsData.filter(p => p.catalog_id === id)
+      setProducts(filteredProducts || [])
     } catch (error) {
       console.error('Error loading data:', error)
     } finally {
@@ -112,14 +99,14 @@ export default function CatalogHomePage() {
   return (
     <div style={{ minHeight: '100vh', background: '#f5f5f5' }}>
       {/* Banner */}
-      <div style={{
+      <div style={{ 
         height: 180,
         background: catalog.banner_url 
           ? `url(${catalog.banner_url}) center/cover`
           : 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
         position: 'relative'
       }}>
-        <div style={{
+        <div style={{ 
           position: 'absolute',
           bottom: 12,
           left: 12,
@@ -209,14 +196,14 @@ export default function CatalogHomePage() {
                     cursor: 'pointer'
                   }}
                 >
-                  <div style={{
+                  <div style={{ 
                     height: 120,
                     background: product.images && product.images[0]
                       ? `url(${product.images[0]}) center/cover`
                       : '#eee'
                   }} />
                   <div style={{ padding: 8 }}>
-                    <div style={{
+                    <div style={{ 
                       fontSize: 13,
                       overflow: 'hidden',
                       textOverflow: 'ellipsis',
